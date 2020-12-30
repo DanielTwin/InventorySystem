@@ -16,12 +16,12 @@ use App\Http\Controllers\Api\UserController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::post('login', LoginController::class)->name('login');
+Route::post('login', [LoginController::class, 'login']);
 
-Route::middleware(['auth:api'])->group( function () {
-    Route::apiResource('users',UserController::class);
+Route::middleware('auth:api')->group( function () {
+    Route::apiResource('users', UserController::class);
 });

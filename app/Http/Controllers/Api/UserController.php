@@ -5,16 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    
-    public $successStatus = 200;
-
-    public function __construct(){
-        $this->middleware(['isAdmin'])->only('index');
-    }
 
     
     /**
@@ -24,36 +21,8 @@ class UserController extends Controller
      */
     public function index()
     {
-       
-        $users = User::all(); 
-        return response()->json(['users' => $users], $this-> successStatus); 
 
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        
-        $validator = Validator::make($request->all(), [ 
-            'name' => 'required', 
-            'email' => 'required|email', 
-            'password' => 'required', 
-            'c_password' => 'required|same:password', 
-        ]);
-        if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], 401);            
-        }
-        $input = $request->all(); 
-        $input['password'] = bcrypt($input['password']); 
-        $user = User::create($input); 
-        $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-        $success['name'] =  $user->name;
-        return response()->json(['success'=>$success], $this-> successStatus); 
+        return response()->json(['users'=>User::with('role')->get()]);
 
     }
 
@@ -65,8 +34,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        
-        return response()->json(['user'=>$user], $this-> successStatus); 
+
+        return response()->json(['user'=>User::with('role')->whereIn($user)->get()]);
 
     }
 
@@ -77,9 +46,45 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        
+        
+        $role = \Auth::user()->role()->first()->id;
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'  . \Auth::id(),
+            'role_id' => 'required|in:'. $role,
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails())
+        {
+            return response(['errors'=>$validator->errors()->all()], 422);
+        }
+
+        $request['password']=Hash::make($request['password']);
+        $request['remember_token'] = Str::random(10);
+        $response = User::find(\Auth::id())->update($request->toArray());
+
+        $message = $response ? 'The user was updated successfully' : 'The user could not be updated';
+
+        return response(['message'=>$message], 200);
+
+    }
+
+    public function promote($id)
+    {
+        $user = \Auth::user();
+        $role =  $user->role()->get()->first();
+
+        if ($role->name == 'admin') {
+            $response = User::find($id)->update(['role_id'=>1]);
+            $message = $response ? 'The user was promoted successfully' : 'The user could not be promoted ';
+            return response()->json(['message'=>$message],200);
+        }
+        return response()->json(['message'=>'You don\'t have the role that allows to upgrade users'],401);
     }
 
     /**
@@ -88,8 +93,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        
+        $response = User::findOrFail($user)->delete();
+        $message = $response ? 'The user was deleted successfully' : 'The user could not be deleted successfully';
+
+        return response(['message'=>$message], 200);
+
     }
 }

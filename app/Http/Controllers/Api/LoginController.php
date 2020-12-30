@@ -5,76 +5,53 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Validator;
+
 
 class LoginController extends Controller
 {
-    public $successStatus = 200;
+    
+    public function register (Request $request) {
 
-    public function login(){ 
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
-            $user = Auth::user(); 
-            $success['token'] =  $user->createToken('MyApp')->accessToken; 
-            return response()->json(['success' => $success], $this->successStatus); 
-        } 
-        else{ 
-            return response()->json(['error'=>'Unauthenticated'], 401); 
-        } 
+    	$validator = $this->validate($request, [
+    		'name' => 'required|string|max:255',
+	        'email' => 'required|string|email|max:255|unique:users',
+	        //'role_id' => 'required|in:2',
+	        'password' => 'required|string|min:8|confirmed',    //password minimum eight characters.
+    	]);
+
+		$request['password']=Hash::make($request['password']);
+		$request['remember_token'] = Str::random(10);
+		$user = User::create($request->toArray());
+		$token = $user->createToken('authToken')->accessToken;
+		$response = ['token' => $token];
+		return response($response, 201);
+	}
+
+    public function login(Request $request){ 
+
+        $login = $request->validate([
+    		'email'=>'required|string',
+    		'password'=>'required|string',
+    	]);
+
+    	if(!Auth::attempt($login)){
+    		return response(['message'=>'Invalids Login Credentials']);
+    	}
+
+    	$accessToken = Auth::user()->createToken('authToken')->accessToken;
+    	return response(['user'=>Auth::user(),'access_token'=>$accessToken]);
+        
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    public function logout (Request $request) {
+	    $token = $request->user()->token();
+	    $token->revoke();
+	    $response = ['message' => 'You have been successfully logged out!'];
+	    return response($response, 200);
+	}
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
