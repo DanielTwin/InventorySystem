@@ -90,18 +90,19 @@ class ImageController extends Controller
     }
 
 
-    // public function promote($id)
-    // {
-    //     $ImageMain = Image::where('main',1)->get()->first();
-    //     if ($ImageMain != null) { $ImageMain->update(['main'=>0]); }
+    public function promote($id)
+    {
+        $ImageMain = Image::where('main',1)->get()->first();
+        if ($ImageMain != null) { $ImageMain->update(['main'=>0]); }
 
-    //     $Image = Image::find($id);
-    //     $response = Image::find($id)->update(['main'=>1]);
+         
+        $Image = Image::find($id);
+        $response = Image::find($id)->update(['main'=>1]);
 
-    //     $message = $response ? 'The Image was promoted successfully' : 'the image could not be promoted';
+        $message = $response ? 'The Image was promoted successfully' : 'the image could not be promoted';
 
-    //     return response(['message'=>$message],201);
-    // }
+        return response(['message'=>$message],201);
+    }
 
     /**
      * Remove the specified resource from storage.

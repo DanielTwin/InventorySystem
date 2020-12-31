@@ -4,6 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\CategorieController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +37,7 @@ Route::middleware('auth:api')->group( function () {
 	Route::get('/categories/{id}', [CategorieController::class, 'show']);
 	Route::post('/categories', [CategorieController::class, 'store']);
 	Route::put('/categories/{id}', [CategorieController::class, 'update']);
-	Route::delete('/categories/{id}', [CategorieController::class, 'destroy');
+	Route::delete('/categories/{id}', [CategorieController::class, 'destroy']);
 
 	Route::get('/products', [ProductController::class, 'index']);
 	Route::get('/products/{id}', [ProductController::class, 'show']);

@@ -22,16 +22,16 @@ class Product extends Model
 
     public function categorie()
     {
-        return $this->belongsTo('App\Category');
+        return $this->belongsTo('App\Models\Category');
     }
 
     public function invoices()
     {
-        return $this->belongsToMany('App\Invoice');
+        return $this->belongsToMany('App\Models\Invoice');
     }
 
     public function images()
     {
-        return $this->hasMany('App\Image');
+        return $this->hasMany('App\Models\Image');
     }
 }

@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable,  SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable,  SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -49,11 +49,11 @@ class User extends Authenticatable
 
     public function invoices()
     {
-        return $this->hasMany('App\Invoice');
+        return $this->hasMany('App\Models\Invoice');
     }
 
     public function role()
     {
-         return $this->belongsTo('App\Role');
+         return $this->belongsTo('App\Models\Role');
     }
 }

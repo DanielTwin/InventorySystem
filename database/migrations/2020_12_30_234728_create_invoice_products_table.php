@@ -30,10 +30,6 @@ class CreateInvoiceProductsTable extends Migration
      */
     public function down()
     {
-        Schema::table('invoice_products', function (Blueprint $table) {
-            $table->dropForeign(['invoice_id']);
-            $table->dropForeign(['product_id']);
-         });
         Schema::dropIfExists('invoice_products');
     }
 }

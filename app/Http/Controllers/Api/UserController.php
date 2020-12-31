@@ -32,10 +32,10 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($id)
     {
 
-        return response()->json(['user'=>User::with('role')->whereIn($user)->get()]);
+        return response()->json(['users'=>User::with('role')->whereIn('id',[$id])->get()]);
 
     }
 
@@ -66,7 +66,7 @@ class UserController extends Controller
 
         $request['password']=Hash::make($request['password']);
         $request['remember_token'] = Str::random(10);
-        $response = User::find(\Auth::id())->update($request->toArray());
+        $response = User::find(Auth::id())->update($request->toArray());
 
         $message = $response ? 'The user was updated successfully' : 'The user could not be updated';
 
