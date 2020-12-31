@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable,  SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +23,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'role_id',
         'password',
     ];
 
@@ -34,6 +35,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'role_id',
     ];
 
     /**
@@ -44,4 +46,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function invoices()
+    {
+        return $this->hasMany('App\Invoice');
+    }
+
+    public function role()
+    {
+         return $this->belongsTo('App\Role');
+    }
 }

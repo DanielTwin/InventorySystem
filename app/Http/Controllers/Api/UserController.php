@@ -76,7 +76,7 @@ class UserController extends Controller
 
     public function promote($id)
     {
-        $user = \Auth::user();
+        $user = Auth::user();
         $role =  $user->role()->get()->first();
 
         if ($role->name == 'admin') {
