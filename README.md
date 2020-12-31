@@ -20,7 +20,7 @@ PHP 7.4 Laravel 8 MariaDB 10.5
 
 A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
+Step.
 
 ```
 1.Setup (install/create) Database and PHP server.
