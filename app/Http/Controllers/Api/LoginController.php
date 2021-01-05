@@ -19,7 +19,7 @@ class LoginController extends Controller
     	$validator = $this->validate($request, [
     		'name' => 'required|string|max:255',
 	        'email' => 'required|string|email|max:255|unique:users',
-	        'role_id' => 'required|in:2',
+	        'role_id' => 'required|in:4',
 	        'password' => 'required|string|min:8|confirmed',    //password minimum eight characters.
     	]);
 

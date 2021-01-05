@@ -65,6 +65,6 @@ Route::middleware('auth:api')->group( function () {
 });
 
 //Register and login
-Route::post('login', [LoginController::class, 'login']);
-Route::post('register',[LoginController::class, 'register']);
-Route::post('logout', [LoginController::class, 'logout']);
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/register',[LoginController::class, 'register']);
+Route::post('/logout', [LoginController::class, 'logout']);
